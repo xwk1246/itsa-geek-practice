@@ -1,0 +1,119 @@
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <title>音樂撥放器-Mplayer</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <div style="margin-top:1.5em;margin-bottom:1.5em;">
+        <label for="albums" style="border:2px solid #aaa;padding:10px;">選擇專輯檔案</label>
+        <input id="albums" type="file" style="display:none;">
+    </div>
+    <div class="mrow">
+        音樂：<select id="songs"></select>
+        <button id="btnPlay" class="btnplay" disabled>播放</button>
+    </div>
+    <div class="mrow">
+        <img id='pic' style='max-width:150px;margin-right:0.5em;vertical-align:top;' />
+        <span id="song"></span>
+    </div>
+    <div class="piano-pad">
+        <div id="C" class="white-key C">
+            <div id="c-sharp" class="black-key C-sharp D-flat"></div>
+        </div>
+        <div id="D" class="white-key D">
+            <div id="d-sharp" class="black-key D-sharp E-flat"></div>
+        </div>
+        <div id="E" class="white-key E"></div>
+        <div id="F" class="white-key F">
+            <div id="f-sharp" class="black-key F-sharp G-flat"></div>
+        </div>
+        <div id="G" class="white-key G">
+            <div id="g-sharp" class="black-key G-sharp A-flat"></div>
+        </div>
+        <div id="A" class="white-key A">
+            <div id="a-sharp" class="black-key A-sharp B-flat"></div>
+        </div>
+        <div id="B" class="white-key B"></div>
+    </div>
+
+    <script>
+        let songs;
+        let curSong;
+        const album = document.querySelector('#albums');
+        const select = document.querySelector('#songs');
+        const pic = document.querySelector('#pic');
+        const songDescription = document.getElementById("song");
+        const play = document.querySelector('#btnPlay');
+        play.setAttribute("disabled", "");
+        const playNote = note => {
+            note = note.slice(0, -1);
+            if (note.slice(-1) === '#') note = note.replace('#', '-sharp');
+            else if (note.slice(-1) === 'b') note = note.replace('b', '-flat');
+            const key = document.querySelector(`.${note}`);
+            let prevColor = key.style.backgroundColor;
+            key.style.backgroundColor = "gray";
+            return { key, prevColor };
+        };
+
+        const readStream = new FileReader();
+        readStream.onload = e => {
+            play.removeAttribute('disabled');
+            songs = JSON.parse(e.target.result).musics;
+            songs.forEach((song, index) => {
+                const option = document.createElement('option');
+                if (index === 0) {
+                    curSong = song;
+                    pic.src = './imgs/' + song.picture;
+                    songDescription.innerHTML = song.description;
+                }
+                option.innerHTML = song.title;
+                option.value = song.picture;
+                select.appendChild(option);
+            });
+
+            songs.map(song => song.notes = song.notes.split(','));
+        };
+        album.onchange = e => {
+            const file = e.target.files[0];
+            readStream.readAsText(file);
+        };
+
+        select.onchange = e => {
+            curSong = songs.find(song => e.target.value === song.picture);
+
+            pic.src = './imgs/' + e.target.value;
+            songDescription.innerHTML = curSong.description;
+        };
+        const timeOut = ms => {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => resolve("hello"), ms || 1000);
+            });
+        };
+        play.onclick = () => {
+            // let i = 0;
+            // let prev = playNote(curSong.notes[i]);
+            // i++;
+            // let interval = setInterval(() => {
+            //     prev.style.backgroundColor = prev.id.length === 1 ? 'white' : 'black';
+            //     if (i === curSong.notes.length) {
+            //         clearInterval(interval);
+            //         return;
+            //     }
+            //     prev = playNote(curSong.notes[i]);
+            //     i++;
+            // }, 1000);
+            (async () => {
+                for (i = 0; i < curSong.notes.length; i++) {
+                    const { key, prevColor } = playNote(curSong.notes[i]);
+                    await timeOut(100);
+                    key.style.backgroundColor = prevColor;
+                }
+            })();
+        };
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        .input {
+            width: 100px;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .custom-sel {
+            overflow-y: auto;
+            height: 200px;
+            width: 100px;
+            position: absolute;
+            background-color: white;
+            border: 1px solid;
+            transition: all 0.5s ease;
+        }
+
+        .custom-sel a {
+            display: block;
+            text-decoration: none;
+            color: black;
+        }
+
+        .custom-sel a:hover {
+            background-color: gray;
+        }
+    </style>
+</head>
+
+<body>
+    起始日期<br />
+    <div style="display: flex; align-items: flex-end;">
+        <div id="day" class="input">
+            <label>日:</label>
+            <div id="day-select" class="custom-sel " hidden>
+            </div>
+            <input type="text" placeholder="dd" maxlength="2">
+        </div>
+        <label>/</label>
+        <div id="month" class="input">
+            <label>月:</label>
+            <div id="month-select" class="custom-sel" hidden>
+                <a href="#">01--Jan</a>
+                <a href="#">02--Feb</a>
+                <a href="#">03--Mar</a>
+                <a href="#">04--Apr</a>
+                <a href="#">05--May</a>
+                <a href="#">06--Jun</a>
+                <a href="#">07--Jul</a>
+                <a href="#">08--Aug</a>
+                <a href="#">09--Sep</a>
+                <a href="#">10--Oct</a>
+                <a href="#">11--Nov</a>
+                <a href="#">12--Dec</a>
+            </div>
+            <input type="text" placeholder="mm" maxlength="2">
+        </div>
+        <label>/</label>
+        <div id="year" class="input">
+            <label>年:</label>
+            <div id="year-select" class="custom-sel" hidden>
+            </div>
+            <input type="text" placeholder="yyyy" maxlength="4">
+        </div>
+    </div>
+    <button id="today">今天</button><br />
+    <select id="symb" name="symb">
+        <option>+</option>
+        <option>-</option>
+    </select>
+    <div>
+        <input placeholder="0" id="year-val"><span>年</span>
+    </div>
+    <div>
+        <input placeholder="0" id="month-val"><span>月</span>
+    </div>
+    <div>
+        <input placeholder="0" id="week-val"><span>週</span>
+    </div>
+    <div>
+        <input placeholder="0" id="day-val"><span>天</span>
+    </div>
+    <button id="calc">計算</button>
+
+
+    <script>
+        const day = document.querySelector('#day');
+        const month = document.querySelector('#month');
+        const year = document.querySelector('#year');
+        const today = document.getElementById("today"); day.children[0].onclick = () => {
+            const daySel = document.querySelector("#day-select");
+            daySel.removeAttribute("hidden");
+            for (let i = 0; i < daySel.children.length; i++) {
+                daySel.children[i].onclick = () => {
+                    const dayInput = document.querySelector('#day input');
+                    dayInput.setAttribute('value', daySel.children[i].innerHTML);
+                };
+            }
+        }
+        month.children[0].onclick = () => {
+            const monthSel = document.querySelector("#month div");
+            monthSel.removeAttribute("hidden");
+            for (let i = 0; i < monthSel.children.length; i++) {
+                monthSel.children[i].onclick = () => {
+                    const monthInput = document.querySelector('#month input');
+                    monthInput.setAttribute('value', monthSel.children[i].innerHTML.slice(0, 2));
+                };
+            }
+        }
+        year.children[0].onclick = () => {
+            const yearSel = document.querySelector("#year div");
+            yearSel.removeAttribute("hidden");
+            for (let i = 0; i < yearSel.children.length; i++) {
+                yearSel.children[i].onclick = () => {
+                    const yearInput = document.querySelector('#year input');
+                    yearInput.setAttribute('value', yearSel.children[i].innerHTML);
+                };
+            }
+            const thisYear = document.querySelectorAll('#year div a')[1000];
+            thisYear.scrollIntoView();
+        }
+        window.onclick = (e) => {
+            if (!e.target.matches("#day-select") && !e.target.matches("#day label")) {
+                const daySel = document.querySelector("#day-select");
+                daySel.setAttribute("hidden", "");
+            }
+            if (!e.target.matches("#month-select") && !e.target.matches("#month label")) {
+                const monthSel = document.querySelector("#month-select");
+                monthSel.setAttribute("hidden", "");
+            }
+            if (!e.target.matches("#year-select") && !e.target.matches("#year label")) {
+                const yearSel = document.querySelector("#year-select");
+                yearSel.setAttribute("hidden", "");
+            }
+        }
+
+        today.onclick = () => {
+            const date = new Date();
+            document.querySelector('#day input').value = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+            document.querySelector('#month input').value = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+            document.querySelector('#year input').value = date.getFullYear();
+        };
+
+        const daySel = document.getElementById("day-select");
+        for (let i = 1; i < 32; i++) {
+            const day = document.createElement("a");
+            day.setAttribute('href', '#');
+            day.innerHTML = i < 10 ? '0' + i.toString() : i.toString();
+            daySel.appendChild(day);
+        }
+        const yearSel = document.getElementById("year-select");
+        const thisYear = new Date().getFullYear();
+        for (let i = thisYear - 1000; i < thisYear + 1001; i++) {
+            const year = document.createElement("a");
+            year.setAttribute('href', '#');
+            year.innerHTML = i.toString();
+            yearSel.appendChild(year);
+        }
+
+        const isLeapYear = (year) => {
+            year = parseInt(year, 10);
+            // if (year % 400 == 0) return true;
+            // if (year % 100 != 0 && year % 4 == 0) return true;
+            // return false;
+            let d = new Date(year, 1, 29);
+            if (d.getDate() === 1) return false;
+            return true;
+        }
+        const checkError = (day, month, year) => {
+            day = parseInt(day, 10);
+            month = parseInt(month, 10);
+            year = parseInt(year, 10);
+            if (day < 0 || month < 0 || year < 0) return true;
+            dayOfMonth = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+            if (month === 2) {
+                if (!isLeapYear(year) && day > 28) return true;
+                if (isLeapYear(year) && day > 29) return true;
+            }
+            else {
+                if (dayOfMonth[month] < day) return true;
+                if (month > 12) return true;
+            }
+            return false;
+        }
+
+        document.querySelector('#calc').onclick = () => {
+            let startDay = document.querySelector('#day input').value;
+            let startMonth = document.querySelector('#month input').value;
+            let startYear = document.querySelector('#year input').value;
+            if (checkError(startDay, startMonth, startYear)) {
+                alert("輸入格式錯誤");
+                return;
+            }
+
+            startDay = parseInt(startDay, 10);
+            startMonth = parseInt(startMonth, 10);
+            startYear = parseInt(startYear, 10);
+
+            const symb = document.getElementById("symb").value;
+
+            const yearVal = document.getElementById("year-val").value ? parseInt(document.getElementById('year-val').value, 10) : 0;
+            const monthVal = document.getElementById("month-val").value ? parseInt(document.getElementById('month-val').value, 10) : 0;
+            const weekVal = document.getElementById("week-val").value ? parseInt(document.getElementById('week-val').value, 10) : 0;
+            const dayVal = document.getElementById("day-val").value ? parseInt(document.getElementById('day-val').value, 10) : 0;
+
+            const startDate = new Date(startYear, startMonth - 1, startDay);
+
+            let endDate = new Date(startYear, startMonth - 1, startDay);
+
+            if (symb === '+') {
+                endDate.setDate(endDate.getDate() + dayVal + weekVal * 7);
+                endDate.setMonth(endDate.getMonth() + monthVal);
+                endDate.setFullYear(endDate.getFullYear() + yearVal);
+            } else {
+                endDate.setDate(endDate.getDate() - dayVal - weekVal * 7);
+                endDate.setMonth(endDate.getMonth() - monthVal);
+                endDate.setFullYear(endDate.getFullYear() - yearVal);
+            }
+
+            const weekName = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            const monthName = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            let message = `開始日期: ${weekName[startDate.getDay()]}, ${startDay.toString()} ${monthName[startMonth - 1]} ${startYear.toString()}\n開始日期往${symb === '+' ? '前' : '後'}${yearVal}年${monthVal}月${weekVal}週${dayVal}天的日期: ${weekName[endDate.getDay()]}, ${endDate.getDate()} ${monthName[endDate.getMonth()]} ${endDate.getFullYear()}`;
+            alert(message)
+
+        };
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,39 @@
+.mrow {
+  background: #f7f1eb;
+  border-bottom: 2px solid #fa7250;
+  vertical-align: middle;
+  padding: 0.5em;
+  font-size: 24pt;
+}
+.piano-pad {
+  background: #b39df1;
+  width: 690px;
+  height: 300px;
+  margin: 0 auto;
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+.white-key {
+  background-color: white;
+  border: 0.5px solid #b39df1;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  width: 90px;
+  height: 270px;
+}
+.black-key {
+  position: relative;
+  left: 50%;
+  margin: auto;
+  background-color: black;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  width: 60px;
+  height: 200px;
+}
+.btnplay {
+  font-size: 16pt;
+  position: absolute;
+  right: 30px;
+}

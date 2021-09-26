@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #form {
+            width: 300px;
+            background-color: black;
+            color: white;
+        }
+
+        .error {
+            color: red;
+        }
+
+        .check {
+            font-size: large;
+            color: rgb(79, 231, 79);
+            font-weight: bolder;
+        }
+
+        .hidden {
+            display: node;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="form">
+        <label for="integer">請輸入一個整數:</label><br>
+        <input autocomplete="off" type="text" id="integer"><span class="check" id="integer-check"></span><br>
+        <label for="integer" class="error" hidden>輸入的數字須介於1和10之間</label><br>
+        <label for="name">姓名:</label><br>
+        <input autocomplete="off" type="text" id="name"><span class="check" id="name-check"></span><br>
+        <label for="name" class="error" hidden>請輸入英文姓名且字數須大於六!</label><br>
+        <label for="username">使用者名稱:</label><br>
+        <input autocomplete="off" type="text" id="username"><span class="check" id="username-check"></span><br>
+        <label for="username" class="error" hidden>不正確的文數字格式!</label><br>
+        <label for="email">電郵:</label><br>
+        <input autocomplete="off" type="text" id="email"><span class="check" id="email-check"></span><br>
+        <label for="email" class="error" hidden>不正確的電郵格式!</label><br>
+        <label for="password">密碼:</label><br>
+        <input autocomplete="off" type="password" id="password"><span class="check" id="password-check"></span><br>
+        <label for="password" class="error" hidden>密碼需輸入至少九個字元</label><br>
+        <label for="secPassword">再輸入一次密碼:</label><br>
+        <input autocomplete="off" type="password" id="secPassword"><span class="check"
+            id="secPassword-check"></span><br>
+        <label for="secPassword" class="error" hidden>兩次的密碼不一致！</label><br>
+        <input type="submit" disabled>
+    </div>
+
+    <script>
+        const integer = document.getElementById("integer");
+        const name = document.getElementById("name");
+        const username = document.getElementById("username");
+        const email = document.getElementById("email");
+        const password = document.getElementById("password");
+        const secPassword = document.getElementById("secPassword");
+        const checked = [0, 0, 0, 0, 0, 0];
+
+        const checkAll = () => {
+            if (!checked.includes(0)) {
+                document.querySelector("input[type=submit]").removeAttribute("disabled");
+                return;
+            }
+            document.querySelector("input[type=submit]").setAttribute("disabled", "");
+        }
+
+        integer.onkeypress = (e) => {
+            if (!(e.key >= "0" && e.key <= "9")) {
+                e.preventDefault();
+            }
+        }
+        integer.onchange = (e) => {
+            const val = e.target.value;
+            const error = document.querySelector("label[for=integer][class=error]");
+            if (val > 10 || val < 1) {
+                error.removeAttribute("hidden");
+                document.getElementById("integer-check").innerHTML = "";
+                checked[0] = 0;
+                return;
+            }
+            error.setAttribute("hidden", "");
+            document.getElementById("integer-check").innerHTML = "√";
+            checked[0] = 1;
+            checkAll();
+        }
+
+        // name.onkeypress = e => {
+        //     const error = document.querySelector("label[for=name][class=error]");
+        //     if (!(e.key >= "0" && e.key <= "9") && !(e.key >= "a" && e.key < "z") && !(e.key >= "A" && e.key <= 'Z')) {
+        //         e.preventDefault();
+        //         error.removeAttribute("hidden");
+        //         return;
+        //     }
+        //     error.setAttribute("hidden", "");
+        // }
+        name.onchange = e => {
+            const validName = /^\w{6}\w*$/;
+            const error = document.querySelector("label[for=name][class=error]");
+            if (!validName.test(e.target.value)) {
+                error.removeAttribute("hidden");
+                document.getElementById("name-check").innerHTML = "";
+                checked[1] = 0;
+                return;
+            }
+            error.setAttribute("hidden", "");
+            document.getElementById("name-check").innerHTML = "√";
+            checked[1] = 1;
+            checkAll();
+        }
+        username.onchange = e => {
+            const validUsername = /^\w{5}\w*$/;
+            const error = document.querySelector("label[for=username][class=error]");
+            const check = document.getElementById("username-check");
+            if (!validUsername.test(e.target.value)) {
+                error.removeAttribute("hidden");
+                check.innerHTML = "";
+                checked[2] = 0;
+                return;
+            }
+            error.setAttribute("hidden", "");
+            check.innerHTML = "√";
+            checked[2] = 1;
+            checkAll();
+        }
+        email.onchange = (e) => {
+            pattern = /^.+@.+$/;
+            const error = document.querySelector("label[for=email][class=error]");
+            if (!pattern.test(e.target.value)) {
+                error.removeAttribute("hidden");
+                document.getElementById("email-check").innerHTML = "";
+                checked[3] = 0;
+                return;
+            }
+            error.setAttribute("hidden", "");
+            document.getElementById("email-check").innerHTML = "√";
+            checked[3] = 1;
+            checkAll();
+        }
+        password.onchange = e => {
+            const error = document.querySelector("label[for=password][class=error]");
+            const check = document.getElementById("password-check");
+            if (e.target.value.length < 9) {
+                error.removeAttribute('hidden');
+                check.innerHTML = "";
+                checked[4] = 0;
+                return;
+            }
+            error.setAttribute('hidden', '');
+            check.innerHTML = "√";
+            checked[4] = 1;
+            checkAll();
+        }
+        secPassword.onchange = e => {
+            const error = document.querySelector("label[for=secPassword][class=error]");
+            const check = document.getElementById("secPassword-check");
+            if (e.target.value !== password.value) {
+                error.removeAttribute('hidden');
+                check.innerHTML = "";
+                checked[5] = 0;
+                return;
+            }
+            error.setAttribute('hidden', '');
+            check.innerHTML = "√";
+            checked[5] = 1;
+            checkAll();
+        }
+
+    </script>
+</body>
+
+</html>

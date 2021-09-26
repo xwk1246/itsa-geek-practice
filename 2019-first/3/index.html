@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <title>Document</title>
+
+    <style type="text/css">
+        :root {
+            --gamebox-size: 300px;
+        }
+
+        body {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .gamebox {
+            width: var(--gamebox-size);
+            height: var(--gamebox-size);
+            display: flex;
+            flex-wrap: wrap;
+            background-color: aqua;
+        }
+
+        .gamebox button {
+            width: calc(var(--gamebox-size) / 3);
+            height: calc(var(--gamebox-size) / 3);
+            color: white;
+            background: radial-gradient(aqua, blue);
+            font-size: 70px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="dialog-confirm" title="選擇你的符號"></div>
+    <div class="gamebox">
+        <button id="btn1" value="0"></button>
+        <button id="btn2" value="1"></button>
+        <button id="btn3" value="2"></button>
+        <button id="btn4" value="3"></button>
+        <button id="btn5" value="4"></button>
+        <button id="btn6" value="5"></button>
+        <button id="btn7" value="6"></button>
+        <button id="btn8" value="7"></button>
+        <button id="btn9" value="8"></button>
+    </div>
+</body>
+
+<script>
+    let playerSymbol = null;
+    let aiSymbol = null;
+    const symbol = ["X", "O"];
+    const first = Math.floor(Math.random() * 2);
+    let btnState = new Array(9).fill('');
+    const aiRandom = () => {
+        let val = Math.floor(Math.random() * 9);
+        while (!check(val)) {
+            val = Math.floor(Math.random() * 9);
+        };
+        btnState[val] = aiSymbol;
+        $(`.gamebox button:nth-child(${val + 1})`).html(aiSymbol);
+        checkWin();
+    };
+    const check = (val) => {
+        if (btnState[val]) return false;
+        return true;
+    };
+    const checkWin = () => {
+        let win;
+        if (((btnState[0] === btnState[1] && btnState[1] === btnState[2]) && (win = btnState[0]))
+            || ((btnState[3] === btnState[4] && btnState[4] === btnState[5]) && (win = btnState[3]))
+            || ((btnState[6] === btnState[7] && btnState[7] === btnState[8]) && (win = btnState[6]))
+            || ((btnState[0] === btnState[3] && btnState[3] === btnState[6]) && (win = btnState[0]))
+            || ((btnState[1] === btnState[4] && btnState[4] === btnState[7]) && (win = btnState[1]))
+            || ((btnState[2] === btnState[5] && btnState[5] === btnState[8]) && (win = btnState[2]))
+            || ((btnState[0] === btnState[4] && btnState[4] === btnState[8]) && (win = btnState[0]))
+            || ((btnState[2] === btnState[4] && btnState[4] === btnState[6]) && (win = btnState[2]))) {
+            alert(win === playerSymbol ? 'YOU WIN!!' : 'you lost..');
+            location.reload();
+            return false;
+        }
+        return true;
+    };
+    $(function () {
+        $("#dialog-confirm").dialog({
+            resizable: false,
+            height: "auto",
+            width: 400,
+            modal: true,
+            buttons: {
+                "X": function () {
+                    playerSymbol = 'X';
+                    aiSymbol = 'O';
+                    if (first) aiRandom();
+                    $(this).dialog("close");
+                },
+                "O": function () {
+                    playerSymbol = 'O';
+                    aiSymbol = 'X';
+                    if (first) aiRandom();
+                    $(this).dialog("close");
+                }
+            }
+        });
+    });
+    $(".gamebox button").click(function () {
+        let val = $(this).attr("value");
+        btnState[val] = playerSymbol;
+        $(this).html(playerSymbol);
+        if (checkWin()) aiRandom();
+    });
+</script>
+
+</html>

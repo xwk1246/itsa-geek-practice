@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #grids {
+            width: 210px;
+            height: 210px;
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        #grids button {
+            width: 70px;
+            height: 70px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>記憶遊戲</h1>
+
+    <span>困難度</span>
+    <select id="difficulty" autocomplete="off">
+        <option value=9>簡單</option>
+        <option value=16>適中</option>
+        <option value=25>困難</option>
+    </select>
+    <br>
+    <span>閱讀時間</span>
+    <input id="time"></input>
+    <span>秒</span>
+    <div id="grids">
+    </div>
+    <button id="start">開始</button>
+    <script>
+        const nums = new Array();
+        let answer;
+        const difficulty = document.getElementById("difficulty");
+        const grids = document.getElementById("grids");
+        let difficulty_val = "9";
+        for (let i = 0; i < parseInt(difficulty_val, 10); i++) {
+            grids.appendChild(document.createElement('button'));
+        }
+        difficulty.onchange = () => {
+            difficulty_val = difficulty.value;
+            switch (difficulty_val) {
+                case "9": {
+                    grids.style.width = '210px';
+                    grids.style.height = '210px';
+                    grids.innerHTML = "";
+                    for (let i = 0; i < 9; i++) {
+                        grids.appendChild(document.createElement('button'));
+                    }
+                    break;
+                }
+                case "16": {
+                    grids.style.width = '280px';
+                    grids.style.height = '280px';
+                    grids.innerHTML = "";
+                    for (let i = 0; i < 16; i++) {
+                        grids.appendChild(document.createElement('button'));
+                    }
+                    break;
+                }
+                case "25": {
+                    grids.style.width = '350px';
+                    grids.style.height = '350px';
+                    grids.innerHTML = "";
+                    for (let i = 0; i < 25; i++) {
+                        grids.appendChild(document.createElement('button'));
+                    }
+                    break;
+                }
+                default: {
+                    break;
+                }
+            }
+        }
+
+        let buttons = Array.from(grids.children);
+
+        const fillNum = () => {
+            buttons.forEach((button, index) => {
+                button.innerHTML = nums[index];
+                button.id = index;
+            });
+        }
+        const clear = () => {
+            buttons.forEach(button => {
+                button.innerHTML = "";
+            });
+        }
+        const startBtn = document.getElementById("start");
+        startBtn.onclick = () => {
+            nums.length = 0;
+            buttons = Array.from(grids.children);
+
+            buttons.forEach(button => {
+                button.style.color = 'black';
+            });
+
+            answer = Math.floor(Math.random() * parseInt(difficulty_val, 10));
+
+            buttons.forEach(button => {
+                button.onclick = () => {
+                    fillNum();
+                    button.style.color = "blue";
+                    buttons[answer].style.color = "red";
+                };
+            });
+            const time = document.getElementById("time");
+            setTimeout(() => {
+                clear();
+                alert(`選${nums[answer]}`);
+            }, time.value * 1000);
+            for (let i = 0; i < parseInt(difficulty_val, 10); i++) {
+                let num = Math.floor(Math.random() * 99 + 1);
+                while (nums.includes(num)) {
+                    num = Math.floor(Math.random() * 99 + 1);
+                }
+                nums.push(num);
+            }
+            fillNum();
+        };
+    </script>
+</body>
+
+</html>

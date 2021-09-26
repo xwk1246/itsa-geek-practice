@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style type="text/css">
+        /* body {
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        } */
+
+        #clock {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        #digital {
+            position: absolute;
+            font-size: 35px;
+            font-family: Arial;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="clock" height="500" width="500"></canvas>
+    <div id="digital"></div>
+    <script>
+        document.querySelector('body').addEventListener('click', (e) => {
+            let ripples = document.createElement('span');
+            ripples.style.position = 'fixed';
+            ripples.style.background = 'radial-gradient(rgb(118, 187, 255), dodgerblue)';
+            ripples.style.pointerEvents = 'none';
+            ripples.style.transform = 'translate(-50%, -50%)';
+            ripples.style.borderRadius = '50%';
+            ripples.style.left = e.clientX + 'px';
+            ripples.style.top = e.clientY + 'px';
+            ripples.animate([
+                { width: '0px', height: '0px', opacity: '0.8' },
+                { width: '100px', height: '100px', opacity: '0' },
+            ], { duration: 500, iterations: Infinity });
+
+            e.target.appendChild(ripples);
+
+            setTimeout(() => ripples.remove(), 500);
+        });
+
+        const updateDigital = () => {
+            d = new Date();
+            const digital = document.getElementById("digital");
+            digital.innerHTML = `${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`;
+            drawTime(d.getHours(), d.getMinutes(), d.getSeconds(), d.getMilliseconds());
+        }
+        setInterval(() => {
+            updateDigital();
+        }, 1);
+
+
+        const canvas = document.getElementById("clock");
+        let clock = canvas.getContext('2d');
+
+        let radius = 240;
+
+        const drawTime = (h, m, s, ms) => {
+            s = s + ms / 1000;
+            m = m + s / 60;
+            h = h + m / 60;
+            clock.save();
+            clock.beginPath();
+            clock.translate(radius, radius);
+            clock.arc(0, 0, radius, 0, Math.PI * 2,);
+            clock.fillStyle = 'orange';
+            clock.fill();
+            clock.beginPath();
+            clock.arc(0, 0, radius - 20, 0, Math.PI * 2,);
+            clock.fillStyle = 'yellow';
+            clock.fill();
+            clock.beginPath();
+            clock.lineWidth = 12;
+            clock.strokeStyle = 'black';
+            clock.rotate(2 * Math.PI / 12 * h);
+            clock.moveTo(0, 0)
+            clock.lineTo(0, -120);
+            clock.stroke();
+            clock.rotate(-2 * Math.PI / 12 * h);
+            clock.beginPath();
+            clock.lineWidth = 8;
+            clock.rotate(Math.PI / 30 * m);
+            clock.moveTo(0, 0)
+            clock.lineTo(0, -170);
+            clock.stroke();
+            clock.rotate(-Math.PI / 30 * m);
+            clock.beginPath();
+            clock.arc(0, 0, 12, 0, Math.PI * 2,);
+            clock.fillStyle = 'blue';
+            clock.fill();
+            clock.beginPath();
+            clock.arc(0, 0, 5, 0, Math.PI * 2,);
+            clock.fillStyle = 'red';
+            clock.fill();
+            clock.beginPath();
+            clock.lineWidth = 5;
+            clock.strokeStyle = 'red';
+            clock.rotate(Math.PI / 30 * s);
+            clock.moveTo(0, 0)
+            clock.lineTo(0, -200);
+            clock.stroke();
+            clock.rotate(-Math.PI / 30 * s);
+            clock.font = "30px Verdana";
+            clock.textAlign = 'center';
+            clock.textBaseline = 'middle';
+            clock.fillStyle = 'red';
+            for (i = 1; i < 13; i++) {
+                clock.save();
+                let angle = Math.PI / 6 * i;
+                clock.rotate(angle);
+                clock.translate(0, -radius * 0.8);
+                clock.rotate(-angle);
+                clock.fillText(i.toString(), 0, 0);
+                clock.restore();
+            }
+            clock.restore();
+        };
+    </script>
+</body>
+
+</html>

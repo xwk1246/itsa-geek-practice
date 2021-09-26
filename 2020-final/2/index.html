@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+        input[type=text] {
+            width: 50px;
+        }
+
+        .label:hover {
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+
+        .sel {
+            position: absolute;
+            width: 100px;
+            height: 200px;
+            background-color: white;
+            overflow-y: auto;
+            border: 1px solid black;
+            transform: translateY(-20px);
+        }
+
+
+        .sel a {
+            display: block;
+            text-decoration: none;
+            color: black;
+            padding: 5px;
+            transition: all 0.5s ease;
+        }
+
+        .sel a:hover {
+            background-color: gray;
+        }
+    </style>
+</head>
+
+<body>
+    <div style="display: flex;">
+        <div>
+            起始日期<br>
+            <div style="display: flex;">
+                <div>
+                    <div class="label">日:</div>
+                    <div id="day-sel" class="sel" hidden></div>
+                    <input type="text" id="day-input" class="date" placeholder="dd">/
+                </div>
+                <div>
+                    <div class="label">月:</div>
+                    <div id="month-sel" class="sel" hidden>
+                        <a href="#">Jan-01</a>
+                        <a href="#">Feb-02</a>
+                        <a href="#">Mar-03</a>
+                        <a href="#">Apr-04</a>
+                        <a href="#">May-05</a>
+                        <a href="#">Jun-06</a>
+                        <a href="#">Jul-07</a>
+                        <a href="#">Aug-08</a>
+                        <a href="#">Sep-09</a>
+                        <a href="#">Oct-10</a>
+                        <a href="#">Nov-11</a>
+                        <a href="#">Dec-12</a>
+                    </div>
+                    <input type="text" id="month-input" class="month" placeholder="mm">/
+                    <div class="date tooltip"></div>
+                </div>
+                <div>
+                    <div class="label">年:</div>
+                    <div id="year-sel" class="sel" hidden></div>
+                    <input type="text" id="year-input" class="year" placeholder="yyyy">
+                    <div class="date tooltip"></div>
+                </div>
+            </div>
+            <button id="today">今天</button>
+        </div>
+        <div style="width: 50px;"></div>
+        <div>
+            結束日期<br>
+            <div style="display: flex;">
+                <div>
+                    <div class="label">日:</div>
+                    <div id="end-day-sel" class="sel" hidden></div>
+                    <input type="text" id="end-day-input" class="date" placeholder="dd">/
+                </div>
+                <div>
+                    <div class="label">月:</div>
+                    <div id="end-month-sel" class="sel" hidden>
+                        <a href="#">Jan-01</a>
+                        <a href="#">Feb-02</a>
+                        <a href="#">Mar-03</a>
+                        <a href="#">Apr-04</a>
+                        <a href="#">May-05</a>
+                        <a href="#">Jun-06</a>
+                        <a href="#">Jul-07</a>
+                        <a href="#">Aug-08</a>
+                        <a href="#">Sep-09</a>
+                        <a href="#">Oct-10</a>
+                        <a href="#">Nov-11</a>
+                        <a href="#">Dec-12</a>
+                    </div>
+                    <input type="text" id="end-month-input" class="month" placeholder="mm">/
+                </div>
+                <div>
+                    <div class="label">年:</div>
+                    <div id="end-year-sel" class="sel" hidden></div>
+                    <input type="text" id="end-year-input" class="year" placeholder="yyyy">
+                </div>
+            </div>
+            <button id="end-today">今天</button>
+        </div>
+    </div>
+    <div id="hint"></div>
+    <input type="checkbox" id="plus">
+    <label for="plus">計算時包含結束日期(就是加一天的意思)</label><br>
+    <input type="submit" value="計算期間天數">
+
+
+    <script>
+        const showSelect = (element) => {
+            const next = element.nextElementSibling;
+            next.removeAttribute("hidden");
+        }
+        const hideSelect = (element) => {
+            element.setAttribute("hidden", "");
+        }
+
+        const d = new Date();
+        const daySel = document.querySelector('#day-sel');
+        const endDaySel = document.querySelector('#end-day-sel');
+        for (i = 1; i < 32; i++) {
+            const a = document.createElement('a');
+            a.setAttribute('href', '#');
+            a.innerHTML = i.toString();
+            a.onclick = () => {
+                document.querySelector('#day-input').value = parseInt(a.innerHTML, 10);
+                hideSelect(daySel);
+            };
+            const a2 = document.createElement('a');
+            a2.setAttribute('href', '#');
+            a2.innerHTML = i.toString();
+            a2.onclick = () => {
+                document.querySelector('#end-day-input').value = parseInt(a2.innerHTML, 10);
+                hideSelect(endDaySel);
+            };
+            daySel.append(a);
+            endDaySel.append(a2);
+        }
+
+        const monthSel = document.querySelector('#month-sel');
+        const endMonthSel = document.querySelector('#end-month-sel');
+        const month = Array.from(monthSel.children);
+        const endMonth = Array.from(endMonthSel.children);
+        month.forEach(a => {
+            a.onclick = () => {
+                let str = a.innerHTML.slice(4);
+                if (str[0] === '0') str = str.slice(1);
+                str = parseInt(str, 10);
+                document.querySelector('#month-input').value = str;
+                hideSelect(monthSel);
+            };
+        });
+        endMonth.forEach(a => {
+            a.onclick = () => {
+                let str = a.innerHTML.slice(4);
+                if (str[0] === '0') str = str.slice(1);
+                str = parseInt(str, 10);
+                document.querySelector('#end-month-input').value = str;
+                hideSelect(endMonthSel);
+            };
+        });
+
+        const yearSel = document.querySelector('#year-sel');
+        const endYearSel = document.querySelector('#end-year-sel');
+        for (i = d.getFullYear() - 1000; i < d.getFullYear() + 1001; i++) {
+            const a = document.createElement('a');
+            a.setAttribute('href', '#');
+            a.innerHTML = i.toString();
+            a.onclick = () => {
+                document.querySelector('#year-input').value = parseInt(a.innerHTML, 10);
+                hideSelect(yearSel);
+            };
+            const a2 = document.createElement('a');
+            a2.setAttribute('href', '#');
+            a2.innerHTML = i.toString();
+            a2.onclick = () => {
+                document.querySelector('#end-year-input').value = parseInt(a2.innerHTML, 10);
+                hideSelect(endYearSel);
+            };
+            yearSel.append(a);
+            endYearSel.append(a2);
+        }
+
+        const hint = document.getElementById("hint");
+        const inputs = document.querySelectorAll("input[type=text]");
+        const hints = ["請輸入1~31代表一個月內第幾天的數字", "請輸入1~12代表月份的數字", "請輸入4位數字的西元年"];
+        const showHint = (index) => {
+            hint.innerHTML = hints[index % 3];
+        }
+        const hideHint = () => {
+            hint.innerHTML = "";
+        }
+
+        inputs.forEach((input, index) => {
+            input.onmouseover = () => showHint(index);
+            input.onmouseout = () => hideHint();
+        });
+        const labels = document.querySelectorAll(".label");
+        labels.forEach((label) => {
+            label.onmouseenter = () => {
+                showSelect(label);
+            }
+            label.nextElementSibling.onmouseleave = () => {
+                hideSelect(label.nextElementSibling);
+            };
+        });
+
+        const today = document.querySelector('#today');
+        const endToday = document.querySelector('#end-today');
+
+        const setValue = (start) => {
+            const td = new Date();
+            const date = document.querySelector(`#${start ? '' : 'end-'}day-input`);
+            const month = document.querySelector(`#${start ? '' : 'end-'}month-input`);
+            const year = document.querySelector(`#${start ? '' : 'end-'}year-input`);
+            date.value = td.getDate();
+            month.value = td.getMonth() + 1;
+            year.value = td.getFullYear();
+        };
+
+        today.onclick = () => setValue(true);
+        endToday.onclick = () => setValue(false);
+
+        const submit = document.querySelector("input[type=submit]");
+        submit.onclick = () => {
+            const date = document.querySelector('#day-input').value;
+            const month = document.querySelector('#month-input').value;
+            const year = document.querySelector('#year-input').value;
+            const endDate = document.querySelector('#end-day-input').value;
+            const endMonth = document.querySelector('#end-month-input').value;
+            const endYear = document.querySelector('#end-year-input').value;
+            const start = new Date();
+            start.setDate(parseInt(date));
+            start.setMonth(parseInt(month) - 1);
+            start.setFullYear(parseInt(year));
+
+            const end = new Date();
+            end.setDate(parseInt(endDate));
+            end.setMonth(parseInt(endMonth) - 1);
+            end.setFullYear(parseInt(endYear));
+
+            let subtract = end.getTime() - start.getTime();
+            if (subtract < 0) subtract = -subtract;
+            const addOne = document.getElementById("plus").checked;
+            const result = new Date();
+            result.setTime(subtract);
+            if (addOne) {
+                result.setDate(result.getDate() + 1);
+            }
+            const day = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            const monthAls = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const disDate = result.getTime() / 1000 / 86400;
+            const addon1 = { month: 1, date: 2 };
+            const addon2 = { year: 2, month: 10, date: 2 };
+            if (end.getTime() >= start.getTime())
+                alert(`起始日期(包含):${day[start.getDay()]}, ${start.getDate()} ${monthAls[start.getMonth()]} ${start.getFullYear()}\n結束日期(包含):${day[end.getDay()]}, ${end.getDate()} ${monthAls[end.getMonth()]} ${end.getFullYear()}\n間隔天數:${disDate}天`);
+            else
+                alert(`原輸入開始日期大於結束日期，對調後計算天數如下:\n起始日期(包含):${day[end.getDay()]}, ${end.getDate()} ${monthAls[end.getMonth()]} ${end.getFullYear()}\n結束日期(包含):${day[start.getDay()]}, ${start.getDate()} ${monthAls[start.getMonth()]} ${start.getFullYear()}\n間隔天數:${disDate}天`);
+            console.log(`${result.getFullYear() - 1970} ${result.getMonth() + 1} ${result.getDate()}`);
+        }
+    </script>
+</body>
+
+</html>
